@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: civicgrid-api
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  sources:
+    # The Helm chart, in the application repo
+    - repoURL: https://github.com/Kwamib/civicgrid-api.git
+      targetRevision: main
+      path: charts/civicgrid-api
+      helm:
+        releaseName: civicgrid
+        valueFiles:
+          - $values/apps/civicgrid-api/values.yaml
+
+    # The values, in this gitops repo
+    - repoURL: https://github.com/Kwamib/civicgrid-gitops.git
+      targetRevision: main
+      ref: values
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: civicgrid
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
