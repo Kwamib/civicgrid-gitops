@@ -13,3 +13,8 @@ autoscaling:
   minReplicas: 1
   maxReplicas: 4
   targetCPUUtilizationPercentage: 80
+
+# Enable Prometheus scraping
+serviceMonitor:
+  enabled: true
+  interval: 30s
