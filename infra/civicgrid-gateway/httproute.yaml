@@ -1,0 +1,18 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: civicgrid-api
+  namespace: civicgrid
+spec:
+  parentRefs:
+    - name: civicgrid-gateway
+  hostnames:
+    - "api.civicgrid.dev.localhost"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: civicgrid-civicgrid-api
+          port: 8000

@@ -1,0 +1,23 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: civicgrid-gateway
+  namespace: civicgrid
+  annotations:
+    # Tell cert-manager to manage TLS certs for this Gateway via the named ClusterIssuer
+    cert-manager.io/cluster-issuer: selfsigned-issuer
+spec:
+  gatewayClassName: eg
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: "api.civicgrid.dev.localhost"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: civicgrid-gateway-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
