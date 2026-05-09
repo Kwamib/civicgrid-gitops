@@ -15,19 +15,18 @@ spec:
     helm:
       releaseName: cert-manager
       values: |
-        installCRDs: true
+        crds:
+          enabled: true
         prometheus:
           enabled: false
         webhook:
           timeoutSeconds: 30
-        # Enable Gateway API integration so cert-manager honors the
-        # cert-manager.io/cluster-issuer annotation on Gateway resources.
+        # Enable Gateway API integration via the documented chart values.
+        # https://cert-manager.io/docs/usage/gateway/
         config:
           apiVersion: controller.config.cert-manager.io/v1alpha1
           kind: ControllerConfiguration
           enableGatewayAPI: true
-        extraArgs:
-          - --feature-gates=ExperimentalGatewayAPISupport=true
 
   destination:
     server: https://kubernetes.default.svc
