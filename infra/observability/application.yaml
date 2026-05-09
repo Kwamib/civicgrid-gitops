@@ -1,0 +1,87 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack
+    targetRevision: 65.5.1
+    helm:
+      releaseName: kube-prometheus-stack
+      values: |
+        # Reduce footprint for minikube
+        prometheus:
+          prometheusSpec:
+            # Short retention for local dev
+            retention: 7d
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 512Mi
+            # Don't require a PV — use emptyDir for minikube
+            storageSpec: {}
+            # Watch ServiceMonitors from any namespace, not just our own
+            serviceMonitorSelectorNilUsesHelmValues: false
+            podMonitorSelectorNilUsesHelmValues: false
+
+        alertmanager:
+          alertmanagerSpec:
+            resources:
+              requests:
+                cpu: 50m
+                memory: 64Mi
+              limits:
+                memory: 128Mi
+
+        grafana:
+          # Default admin password (change later if exposing publicly)
+          adminPassword: admin
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+          # Persist dashboards in emptyDir for minikube
+          persistence:
+            enabled: false
+          # Auto-load community dashboards
+          defaultDashboardsEnabled: true
+
+        # Cluster-wide metrics
+        kubeStateMetrics:
+          enabled: true
+        nodeExporter:
+          enabled: true
+
+        # Disable scraping kubelet/kube-proxy metrics that minikube doesn't expose properly
+        kubeProxy:
+          enabled: false
+        kubeControllerManager:
+          enabled: false
+        kubeScheduler:
+          enabled: false
+        kubeEtcd:
+          enabled: false
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      # CRDs in this chart are HUGE — same trick as Gateway API
+      - Replace=true
