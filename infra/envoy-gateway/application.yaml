@@ -9,12 +9,19 @@ spec:
   project: default
 
   source:
-    # Official Envoy Gateway Helm chart from their OCI registry
     repoURL: docker.io/envoyproxy
     chart: gateway-helm
     targetRevision: v1.5.4
     helm:
       releaseName: envoy-gateway
+      values: |
+        # Don't install Gateway API CRDs — they're managed by gateway-api-crds Application
+        crds:
+          gatewayAPI:
+            enabled: false
+        # Don't install Envoy Gateway's own CRDs from this chart either; let the chart's
+        # CRD management work normally for envoy-specific CRDs (envoyproxies, etc.)
+        # We're only disabling the upstream Gateway API CRDs.
 
   destination:
     server: https://kubernetes.default.svc
