@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: civicgrid-gateway
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/Kwamib/civicgrid-gitops.git
+    targetRevision: main
+    path: infra/civicgrid-gateway
+    directory:
+      include: '*.yaml'
+      exclude: application.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: civicgrid
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true
