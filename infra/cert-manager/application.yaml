@@ -20,6 +20,14 @@ spec:
           enabled: false
         webhook:
           timeoutSeconds: 30
+        # Enable Gateway API integration so cert-manager honors the
+        # cert-manager.io/cluster-issuer annotation on Gateway resources.
+        config:
+          apiVersion: controller.config.cert-manager.io/v1alpha1
+          kind: ControllerConfiguration
+          enableGatewayAPI: true
+        extraArgs:
+          - --feature-gates=ExperimentalGatewayAPISupport=true
 
   destination:
     server: https://kubernetes.default.svc
