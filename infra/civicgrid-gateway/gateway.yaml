@@ -12,7 +12,7 @@ spec:
     - name: https
       protocol: HTTPS
       port: 443
-      hostname: "api.civicgrid.dev.localhost"
+      hostname: "api.civicgrid.org"
       tls:
         mode: Terminate
         certificateRefs:
