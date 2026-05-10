@@ -7,7 +7,7 @@ spec:
   parentRefs:
     - name: civicgrid-gateway
   hostnames:
-    - "api.civicgrid.dev.localhost"
+    - "api.civicgrid.org"
   rules:
     - matches:
         - path:
