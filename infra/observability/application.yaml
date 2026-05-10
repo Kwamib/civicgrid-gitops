@@ -4,7 +4,7 @@ metadata:
   name: kube-prometheus-stack
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/sync-wave: "2"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -17,10 +17,8 @@ spec:
     helm:
       releaseName: kube-prometheus-stack
       values: |
-        # Reduce footprint for minikube
         prometheus:
           prometheusSpec:
-            # Short retention for local dev
             retention: 7d
             resources:
               requests:
@@ -28,9 +26,7 @@ spec:
                 memory: 256Mi
               limits:
                 memory: 512Mi
-            # Don't require a PV — use emptyDir for minikube
             storageSpec: {}
-            # Watch ServiceMonitors from any namespace, not just our own
             serviceMonitorSelectorNilUsesHelmValues: false
             podMonitorSelectorNilUsesHelmValues: false
 
@@ -44,7 +40,6 @@ spec:
                 memory: 128Mi
 
         grafana:
-          # Default admin password (change later if exposing publicly)
           adminPassword: admin
           resources:
             requests:
@@ -52,19 +47,19 @@ spec:
               memory: 128Mi
             limits:
               memory: 256Mi
-          # Persist dashboards in emptyDir for minikube
           persistence:
             enabled: false
-          # Auto-load community dashboards
           defaultDashboardsEnabled: true
 
-        # Cluster-wide metrics
+        prometheusOperator:
+          admissionWebhooks:
+            enabled: false
+
         kubeStateMetrics:
           enabled: true
         nodeExporter:
           enabled: true
 
-        # Disable scraping kubelet/kube-proxy metrics that minikube doesn't expose properly
         kubeProxy:
           enabled: false
         kubeControllerManager:
@@ -85,5 +80,4 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
-      # CRDs in this chart are HUGE — same trick as Gateway API
       - Replace=true
