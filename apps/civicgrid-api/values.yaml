@@ -6,6 +6,7 @@ database:
   url: ""
   existingSecret: civicgrid-database
   existingSecretKey: DATABASE_URL
+  existingSecretKey: ADMIN_TOKEN
 
 replicaCount: 1
 autoscaling:
@@ -18,3 +19,8 @@ autoscaling:
 serviceMonitor:
   enabled: true
   interval: 30s
+
+# Admin token Secret created by Terraform in civicgrid-infra
+admin:
+  existingSecret: civicgrid-admin
+  existingSecretKey: ADMIN_TOKEN
