@@ -1,0 +1,76 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: redis
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    chart: redis
+    targetRevision: 20.6.2
+    helm:
+      releaseName: redis
+      values: |
+        # Single-instance Redis for rate-limit counters.
+        # Counters are ephemeral — losing them on restart is acceptable
+        # (every API key gets fresh quota), so no persistence or replication.
+        architecture: standalone
+
+        auth:
+          # Cluster-internal traffic only, no external exposure.
+          # Tightening this is a Step 16 (security hardening) item.
+          enabled: false
+
+        master:
+          # Ephemeral in-memory only.
+          persistence:
+            enabled: false
+
+          # Tiny — rate limit data is a few hundred KB at most.
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+
+          # Run as non-root, drop capabilities (matches civicgrid-api pattern).
+          podSecurityContext:
+            enabled: true
+            fsGroup: 1001
+          containerSecurityContext:
+            enabled: true
+            runAsUser: 1001
+            runAsNonRoot: true
+            readOnlyRootFilesystem: false
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+        # Don't deploy a replica — standalone is enough for our load.
+        replica:
+          replicaCount: 0
+
+        # Don't deploy metrics sidecar — we can add ServiceMonitor later
+        # in Step 16 if we want Redis metrics in Grafana.
+        metrics:
+          enabled: false
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: redis
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
