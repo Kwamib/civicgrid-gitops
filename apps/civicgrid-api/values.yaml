@@ -23,3 +23,9 @@ serviceMonitor:
 admin:
   existingSecret: civicgrid-admin
   existingSecretKey: ADMIN_TOKEN
+
+# Redis disabled for now — Bitnami chart URL no longer resolves after their
+# August 2025 catalog restructure. Rate limiter falls back to in-memory mode.
+# This is fine for single-pod; if/when we scale we'll deploy Redis another way.
+redis:
+  url: ""
