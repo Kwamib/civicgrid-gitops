@@ -6,7 +6,6 @@ database:
   url: ""
   existingSecret: civicgrid-database
   existingSecretKey: DATABASE_URL
-  existingSecretKey: ADMIN_TOKEN
 
 replicaCount: 1
 autoscaling:
