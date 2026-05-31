@@ -11,7 +11,7 @@ spec:
   project: default
 
   source:
-    repoURL: https://charts.bitnami.com/bitnami
+    repoURL: https://charts.bitnami.com/bitnami-legacy
     chart: redis
     targetRevision: 20.6.2
     helm:
