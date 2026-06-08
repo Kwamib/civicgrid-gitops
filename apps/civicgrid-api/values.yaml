@@ -29,3 +29,8 @@ admin:
 # This is fine for single-pod; if/when we scale we'll deploy Redis another way.
 redis:
   url: ""
+
+# Supabase JWT secret for /me endpoints (created by Terraform in civicgrid-admin secret)
+jwt:
+  existingSecret: civicgrid-admin
+  existingSecretKey: SUPABASE_JWT_SECRET
