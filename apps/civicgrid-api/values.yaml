@@ -34,3 +34,6 @@ redis:
 jwt:
   existingSecret: civicgrid-admin
   existingSecretKey: SUPABASE_JWT_SECRET
+
+webhookDrain:
+  enabled: true
