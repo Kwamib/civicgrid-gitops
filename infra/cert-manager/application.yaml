@@ -22,7 +22,7 @@ spec:
         prometheus:
           enabled: false
         webhook:
-          timeoutSeconds: 30
+          timeoutSeconds: 29
         # Enable Gateway API integration via the documented chart values.
         # https://cert-manager.io/docs/usage/gateway/
         config:
