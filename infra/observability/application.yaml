@@ -53,7 +53,9 @@ spec:
 
         prometheusOperator:
           admissionWebhooks:
-            enabled: false
+            enabled: true
+            certManger:
+              enabled: true
 
         kubeStateMetrics:
           enabled: true
