@@ -1,0 +1,52 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: metrics-server
+  namespace: argocd
+  annotations:
+    # Foundational (kubectl top + HPA depend on it) — bring up early, same
+    # wave as cert-manager.
+    argocd.argoproj.io/sync-wave: "0"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    repoURL: https://kubernetes-sigs.github.io/metrics-server/
+    chart: metrics-server
+    targetRevision: 3.12.2
+    helm:
+      releaseName: metrics-server
+      values: |
+        # DOKS kubelets present serving certs metrics-server won't validate by
+        # default, so it can't scrape them and reports no metrics. This flag is
+        # the standard, documented fix for managed clusters.
+        args:
+          - --kubelet-insecure-tls
+
+        # Tiny footprint — the node is memory-tight (4GB), keep this lean.
+        resources:
+          requests:
+            cpu: 25m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
+
+        # Single node, single replica is correct; no need for HA/PDB churn.
+        replicas: 1
+
+        podDisruptionBudget:
+          enabled: false
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
