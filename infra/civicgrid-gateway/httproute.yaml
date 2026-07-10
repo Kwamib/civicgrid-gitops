@@ -5,7 +5,9 @@ metadata:
   namespace: civicgrid
 spec:
   parentRefs:
-    - name: civicgrid-gateway
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: civicgrid-gateway
   hostnames:
     - "api.civicgrid.org"
   rules:
@@ -14,5 +16,8 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: civicgrid-civicgrid-api
+        - group: ""
+          kind: Service
+          name: civicgrid-civicgrid-api
           port: 8000
+          weight: 1
