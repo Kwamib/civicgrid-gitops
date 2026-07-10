@@ -40,7 +40,10 @@ spec:
                 memory: 128Mi
 
         grafana:
-          adminPassword: admin
+          admin:
+            existingSecret: grafana-admin-credentials
+            userKey: admin-user
+            passwordKey: admin-password
           resources:
             requests:
               cpu: 50m
