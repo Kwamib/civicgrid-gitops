@@ -1,6 +1,7 @@
 image:
-  tag: "latest"
-  pullPolicy: Always
+  # Pinned to the digest running before the Oct 7 node reboot (pre-PR #25 code).
+  tag: "latest@sha256:2e3c10460ef26e76999c074f0124a4714a77213096e96799322d5e1774db5a10"
+  pullPolicy: IfNotPresent
 
 database:
   url: ""
