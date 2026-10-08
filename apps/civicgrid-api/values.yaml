@@ -11,7 +11,8 @@ database:
 replicaCount: 1
 autoscaling:
   enabled: true
-  minReplicas: 1
+  # 2 so a pod restart (deploy, crash, node event) never drops the API to zero.
+  minReplicas: 2
   maxReplicas: 4
   targetCPUUtilizationPercentage: 80
 
