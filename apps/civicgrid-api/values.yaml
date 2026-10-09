@@ -11,8 +11,9 @@ database:
 replicaCount: 1
 autoscaling:
   enabled: true
-  # 2 so a pod restart (deploy, crash, node event) never drops the API to zero.
-  minReplicas: 2
+  # Back to 1 (Oct 8): 2 replicas pushed node memory requests to 97% and the
+  # webhook-drain CronJob couldn't schedule. Revisit after reclaiming memory.
+  minReplicas: 1
   maxReplicas: 4
   targetCPUUtilizationPercentage: 80
 
