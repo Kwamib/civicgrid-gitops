@@ -1,6 +1,6 @@
 image:
   # Pin to an immutable CI tag (sha-<7-char commit>). Rollback = revert this commit.
-  tag: "sha-e631777"
+  tag: "sha-93bf092"
   pullPolicy: IfNotPresent
 
 database:
