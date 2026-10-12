@@ -27,9 +27,9 @@ admin:
   existingSecret: civicgrid-admin
   existingSecretKey: ADMIN_TOKEN
 
-# Redis disabled for now — Bitnami chart URL no longer resolves after their
-# August 2025 catalog restructure. Rate limiter falls back to in-memory mode.
-# This is fine for single-pod; if/when we scale we'll deploy Redis another way.
+# Shared rate-limit counters for all API pods (since Oct 11, 2026). Redis runs
+# in-cluster from infra/redis (Deployment civicgrid-redis, no persistence).
+# If Redis is down the API falls back to per-pod counting; it never fails requests.
 redis:
   url: "redis://civicgrid-redis.civicgrid.svc.cluster.local:6379/0"
 
