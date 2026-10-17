@@ -19,13 +19,20 @@ spec:
       values: |
         prometheus:
           prometheusSpec:
-            retention: 7d
+            # Oct 17, 2026: OOMKilled for 9 days (2,012 restarts) while replaying
+            # its write-ahead log at the 512Mi limit; each crash left a bigger log
+            # (2,033 segments), so it could never catch up, and with Prometheus
+            # down no alert reached Slack. Fix: more headroom for replay, less
+            # data kept. A limit reserves nothing, so this barely affects
+            # scheduling (request +64Mi).
+            retention: 3d
+            retentionSize: 1GB
             resources:
               requests:
                 cpu: 100m
-                memory: 256Mi
+                memory: 320Mi
               limits:
-                memory: 512Mi
+                memory: 1Gi
             storageSpec: {}
             serviceMonitorSelectorNilUsesHelmValues: false
             podMonitorSelectorNilUsesHelmValues: false
