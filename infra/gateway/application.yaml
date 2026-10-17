@@ -15,7 +15,7 @@ spec:
     targetRevision: main
     path: infra/gateway
     directory:
-      include: gatewayclass.yaml
+      include: '{gatewayclass.yaml,envoyproxy.yaml}'
 
   destination:
     server: https://kubernetes.default.svc

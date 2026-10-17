@@ -16,6 +16,17 @@ spec:
     targetRevision: v1.5.4
     helm:
       releaseName: envoy-gateway
+      # Oct 17, 2026: the controller reserved 256Mi and used about 44Mi on a
+      # node whose reservations sat at 90%.
+      values: |
+        deployment:
+          envoyGateway:
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
 
   destination:
     server: https://kubernetes.default.svc

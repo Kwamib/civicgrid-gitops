@@ -1,0 +1,22 @@
+# Envoy proxy pods (the data plane that serves api.civicgrid.org).
+# Oct 17, 2026: the chart default reserved 512Mi per proxy pod; the pod used
+# about 50Mi. On a single node at 90% reserved memory that blocked rollouts
+# and the webhook-drain job. 128Mi request leaves room for traffic bursts;
+# the 512Mi limit caps a runaway proxy without reserving it.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: civicgrid-proxy
+  namespace: envoy-gateway-system
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyDeployment:
+        container:
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
