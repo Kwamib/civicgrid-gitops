@@ -43,6 +43,9 @@ spec:
             # /etc/alertmanager/secrets/alertmanager-slack/url
             secrets:
               - alertmanager-slack
+              # Healthchecks.io ping URL for the Watchdog heartbeat (also made
+              # by hand). Mounted at /etc/alertmanager/secrets/alertmanager-heartbeat/url
+              - alertmanager-heartbeat
             resources:
               requests:
                 cpu: 50m
@@ -59,14 +62,25 @@ spec:
               group_interval: 5m
               repeat_interval: 12h
               routes:
+                # Watchdog always fires while Prometheus and Alertmanager work.
+                # Forwarding it every 5 minutes to Healthchecks.io (outside the
+                # cluster) is the dead-man's switch: if pings stop, Healthchecks
+                # alerts. Prometheus was down 9 days unnoticed before this (Oct 2026).
                 - matchers: ['alertname = "Watchdog"']
-                  receiver: "null"
+                  receiver: heartbeat
+                  group_wait: 0s
+                  group_interval: 1m
+                  repeat_interval: 5m
                 - matchers: ['alertname = "InfoInhibitor"']
                   receiver: "null"
                 - matchers: ['severity = "info"']
                   receiver: "null"
             receivers:
               - name: "null"
+              - name: heartbeat
+                webhook_configs:
+                  - url_file: /etc/alertmanager/secrets/alertmanager-heartbeat/url
+                    send_resolved: false
               - name: slack
                 slack_configs:
                   - api_url_file: /etc/alertmanager/secrets/alertmanager-slack/url
