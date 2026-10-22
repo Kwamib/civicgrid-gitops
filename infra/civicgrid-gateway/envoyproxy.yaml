@@ -1,0 +1,20 @@
+# Settings for the Envoy proxy behind civicgrid-gateway.
+#
+# Traffic now reaches the gateway through the Cloudflare Tunnel
+# (infra/cloudflared), so the gateway's Service is ClusterIP: no public
+# DigitalOcean load balancer, no node port, nothing to reach from outside.
+#
+# Created before the Gateway that references it (sync wave -1).
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: civicgrid-proxy
+  namespace: civicgrid
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyService:
+        type: ClusterIP

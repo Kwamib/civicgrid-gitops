@@ -8,6 +8,12 @@ metadata:
     cert-manager.io/cluster-issuer: selfsigned-issuer
 spec:
   gatewayClassName: eg
+  # Use civicgrid-proxy settings: inside-only Service, reached via the tunnel.
+  infrastructure:
+    parametersRef:
+      group: gateway.envoyproxy.io
+      kind: EnvoyProxy
+      name: civicgrid-proxy
   listeners:
     - name: https
       protocol: HTTPS
