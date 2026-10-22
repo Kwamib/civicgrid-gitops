@@ -92,6 +92,10 @@ spec:
                       {{ end }}
 
         grafana:
+          # Off by default to save about 270Mi on the single node. Grafana only
+          # draws charts; Prometheus and Alertmanager keep collecting and alerting.
+          # Set to 1 and push to use dashboards, then back to 0.
+          replicas: 0
           admin:
             existingSecret: grafana-admin-credentials
             userKey: admin-user
