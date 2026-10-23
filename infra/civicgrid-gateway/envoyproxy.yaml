@@ -4,6 +4,12 @@
 # (infra/cloudflared), so the gateway's Service is ClusterIP: no public
 # DigitalOcean load balancer, no node port, nothing to reach from outside.
 #
+# Resources MUST stay in this file. The Gateway references this EnvoyProxy,
+# and Gateway level settings REPLACE the GatewayClass level ones in
+# infra/gateway/envoyproxy.yaml rather than merging with them. Without this
+# block the proxy falls back to the 512Mi default request, which on the single
+# node left drain pods unschedulable (incident Oct 23, 2026).
+#
 # Created before the Gateway that references it (sync wave -1).
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: EnvoyProxy
@@ -18,3 +24,11 @@ spec:
     kubernetes:
       envoyService:
         type: ClusterIP
+      envoyDeployment:
+        container:
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
